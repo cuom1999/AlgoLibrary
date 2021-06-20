@@ -1,2 +1,2 @@
 # AlgoLibrary
-A set of collected and written C++ codes for algorithms.
+A set of self-written and collected C++ codes for algorithms.
