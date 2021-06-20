@@ -1,0 +1,1 @@
+g++ -std=c++14 -Wl,--stack=268435456 -O2 main.cpp -o main.exe
