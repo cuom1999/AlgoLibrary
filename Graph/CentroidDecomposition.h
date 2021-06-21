@@ -13,11 +13,7 @@ struct CentroidDecomposition {
         cenChild.resize(n + 1);
         s.resize(n + 1);
         subCD.resize(n + 1);
-
-        for (int i = 1; i <= n; i++) {
-            for (auto j: adj[i]) s[i].insert(j);
-        }
-        centroidDec(1, 0);
+        adj.resize(n + 1);
     }
 
     void addEdge(int u, int v) {
@@ -49,6 +45,7 @@ struct CentroidDecomposition {
         int n = dfsCD(a, p);
         int cen = centroid(a, p, n);
         cenDad[cen] = p;
+
         if(p) cenChild[p].push_back(cen);
         else cenRoot = cen;
 
@@ -59,8 +56,10 @@ struct CentroidDecomposition {
     }
 
     void init() {
+        for (int i = 1; i <= n; i++) {
+            for (auto j: adj[i]) s[i].insert(j);
+        }
         dfsCD(1, 0);
         centroidDec(1, 0);
     }
 };
-
