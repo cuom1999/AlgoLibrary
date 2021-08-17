@@ -11,6 +11,7 @@ struct SCC {
         num.resize(n + 1);
         low.resize(n + 1);
         vs.resize(n + 1);
+        adj.resize(n + 1);
         time = 0;
     }
 
