@@ -91,6 +91,6 @@ struct IndexSet {
     }
   
     bool find(int x) {
-        return bit.getSum(x) == bit.getSum(x - 1) + 1;
+        return bit.getSum(x) > bit.getSum(x - 1);
     }
 };
