@@ -8,7 +8,7 @@ typedef tree<int,null_type,less<int>,rb_tree_tag,tree_order_statistics_node_upda
 // Ex;
 IndexTree s = {2, 5, 6, 10};
 *s.find_by_order(2) == 6;
-s.order_of_key(x) == lower_bound(x)-s.begin();
+s.order_of_key(x) == lower_bound(x) - s.begin();
 
 // ---------------------------------------------------------------------------------------------
 // Custom Class (only use for values in [1, maxVal])
@@ -54,14 +54,19 @@ struct BIT {
 struct IndexSet {
     BIT bit;
     int _size;
-    int maxVal;
+    int intervalLength;
+  	int offset;
+  	static const int INF = 1e9;
     
-    IndexSet(int maxVal): maxVal(maxVal) {
-        bit = BIT(maxVal);
-        _size = 0;
+    IndexSet(int minVal, int maxVal) {
+      	intervalLength = maxVal - minVal + 1;
+      	offset         = -minVal + 1; 
+        bit            = BIT(intervalLength);
+        _size          = 0;
     }
       
     void insert(int val) {
+      	val += offset;
         if (bit.getSum(val) == bit.getSum(val - 1)) {
             bit.add(val, 1);
             _size++;
@@ -69,6 +74,7 @@ struct IndexSet {
     }
     
     void erase(int val) {
+      	val += offset;
         if (bit.getSum(val) == bit.getSum(val - 1) + 1) {
             bit.add(val, -1);
             _size--;
@@ -79,18 +85,23 @@ struct IndexSet {
         return _size;
     }
     
-    // return -1 if no result
+    // return INF if no result
     int lower_bound(int val) {
-        int res = bit.lowerBound(bit.getSum(val - 1) + 1); // return maxVal + 1 if no result
-        if (res > maxVal) return -1;
-        return res;
+        val += offset;
+      	if (val < 1) val = 1;
+      	if (val > intervalLength) return INF;
+
+      	int res = bit.lowerBound(bit.getSum(val - 1) + 1);
+        if (res > intervalLength) return INF;
+        return res - offset;
     }
     
     int operator[] (int k) { // s = {2, 4, 6} -> s[2] = 6, s[1] = 4
-        return bit.lowerBound(k + 1);
+        return bit.lowerBound(k + 1) - offset;
     }
   
     bool find(int x) {
+      	x += offset;
         return bit.getSum(x) > bit.getSum(x - 1);
     }
 };
