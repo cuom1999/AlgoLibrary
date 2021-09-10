@@ -14,7 +14,7 @@ struct Opt1D {
     }
 
 
-    // cost(i, j)
+    // dp[j] = dp[i] + cost(i, j)
     long long cost(int i, int j) { // i -> j
         // return b[i] * a[j];
     }
@@ -40,7 +40,7 @@ struct Opt1D {
                     int lo = y + 1, hi = n + 1;
                     while(lo < hi) {
                         int mid = (lo + hi) / 2;
-                        if (dp[x] + cost(x, mid) <= dp[oldk] + cost(oldk, mid))
+                        if (x < mid && dp[x] + cost(x, mid) <= dp[oldk] + cost(oldk, mid))
                             hi = mid;
                         else
                             lo = mid + 1;
