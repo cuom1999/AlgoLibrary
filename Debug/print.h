@@ -5,7 +5,7 @@ ostream& operator<< (ostream &out, const pair<T, V> &x) {
 }
 
 template<typename T, size_t SIZE>
-ostream& operator<< (ostream &out, array<T, SIZE> &v){
+ostream& operator<< (ostream &out, const array<T, SIZE> &v){
     int f = 0; 
     for (auto i: v) {
         out << (f++ ? ", " : "[") << i; 
@@ -15,31 +15,34 @@ ostream& operator<< (ostream &out, array<T, SIZE> &v){
 }
 
 template<typename T>
-ostream& operator<< (ostream &out, vector<T> &v){
+ostream& operator<< (ostream &out, const vector<T> &v){
     int f = 0; 
     for (auto i: v) {
         out << (f++ ? ", " : "[") << i; 
     }
+    if (!v.size()) out << "[";
     out << "]";
     return out;
 }
 
 template<typename T>
-ostream& operator<< (ostream &out, set<T> &v){
+ostream& operator<< (ostream &out, const set<T> &v){
     int f = 0; 
     for (auto i: v) {
         out << (f++ ? ", " : "{") << i; 
     }
+    if (!v.size()) out << "{";
     out << "}";
     return out;
 }
 
 template<typename T, typename V>
-ostream& operator<< (ostream &out, map<T, V> &v){
+ostream& operator<< (ostream &out, const map<T, V> &v){
     int f = 0; 
     for (auto i: v) {
         out << (f++ ? ", " : "{") << i; 
     }
+    if (!v.size()) out << "{";
     out << "}";
     return out;
 }
