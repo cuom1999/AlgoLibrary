@@ -13,7 +13,7 @@ struct HillClimbing {
     bool useIntParam; // true for int, false for double
 
     HillClimbing(Func f): f(f) {
-        useIntParam = is_same<T, int>::value;
+        useIntParam = is_same<T, int>::value | is_same<T, long long>::value;
     }
 
     T climb(T start, T radius, T minBound, T maxBound, int depth) {
