@@ -3,8 +3,8 @@
 // 
 // Usage:
 // define a function f outside
-// int: HillClimbing<int> hill(f, true);
-// double: HillClimbing<double> hill(f, false);
+// int: HillClimbing<int> hill(f);
+// double: HillClimbing<double> hill(f);
 // getMin: hill.getMin(l, r) to get critical point in [l, r]
 
 template <typename T, typename Func=function<double(T)>>
@@ -12,7 +12,9 @@ struct HillClimbing {
     Func f;
     bool useIntParam; // true for int, false for double
 
-    HillClimbing(Func f, bool useIntParam): f(f), useIntParam(useIntParam) {}
+    HillClimbing(Func f): f(f) {
+        useIntParam = is_same<T, int>::value;
+    }
 
     T climb(T start, T radius, T minBound, T maxBound, int depth) {
         T x = start;
