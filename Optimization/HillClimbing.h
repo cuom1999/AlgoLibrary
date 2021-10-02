@@ -10,16 +10,16 @@
 template <typename T, typename Func=function<double(T)>>
 struct HillClimbing {
     Func f;
-    bool useIntParams; // true for int, false for double
+    bool useIntParam; // true for int, false for double
 
-    HillClimbing(Func f, bool useIntParams): f(f), useIntParams(useIntParams) {}
+    HillClimbing(Func f, bool useIntParam): f(f), useIntParam(useIntParam) {}
 
     T climb(T start, T radius, T minBound, T maxBound, int depth) {
         T x = start;
         double F = f(x);
 
         for (int i = 1; i <= depth && radius; i++) {
-            if (useIntParams) {
+            if (useIntParam) {
                 radius = (radius + 1) / 2;
             }
             else {
@@ -51,7 +51,7 @@ struct HillClimbing {
         
         T res  = minBound - 1;
         T jump = (maxBound - minBound) / numInterval;
-        if (useIntParams) {
+        if (useIntParam) {
             jump = 1;
         }
         T start = minBound;
