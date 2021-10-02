@@ -18,6 +18,7 @@ struct HillClimbing {
 
     T climb(T start, T radius, T minBound, T maxBound, int depth) {
         T x = start;
+        x = min(x, maxBound); x = max(x, minBound);
         double F = f(x);
 
         for (int i = 1; i <= depth && radius; i++) {
