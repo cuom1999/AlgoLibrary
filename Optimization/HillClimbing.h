@@ -56,10 +56,10 @@ struct HillClimbing {
         if (useIntParam) {
             jump = 1;
         }
-        T start = minBound;
+        T start = minBound + jump;
 
-        for (int i = 0; i < numInterval && start <= maxBound; i++) {
-            T val = climb(start, (maxBound - minBound) / numInterval, minBound, maxBound, depth);
+        for (int i = 0; i <= numInterval && start <= maxBound; i++) {
+            T val = climb(start, jump, minBound, maxBound, depth);
             double fval = f(val);
             if (resVal > fval) {
                 res = val;
