@@ -18,7 +18,7 @@ struct Point {
         return {x * c, y * c};
     }
     bool operator<(const Point&a) {
-        if (x == a.x) return y < a.y;
+        if (abs(x - a.x) < eps) return y < a.y;
         return x < a.x;
     }
     bool operator==(const Point&a) {
@@ -43,8 +43,8 @@ long double abs(const Point& A) {
 // ----------------------- Segment ---------------------
 // segment intersect
 bool intersect(Point a, Point b, Point c, Point d) {
-    return cross(b, c, a) * cross(b, d, a) < 0 and
-        cross(d, a, c) * cross(d, b, c) < 0;
+    return cross(b, c, a) * cross(b, d, a) < -eps and
+        cross(d, a, c) * cross(d, b, c) < -eps;
 }
 
 // A on [BC]
@@ -79,8 +79,8 @@ bool areIntersect(Line l1, Line l2, Point& p) {
 Point circumcenter(Point A, Point B, Point C) {
     B = B - A;
     C = C - A;
-    Line l1 = {2 * B.x, 2 * B.y, -sq(B.x) - sq(B.y)};
-    Line l2 = {2 * C.x, 2 * C.y, -sq(C.x) - sq(C.y)};
+    Line l1 = {B.x * 2, B.y * 2, -sq(B.x) - sq(B.y)};
+    Line l2 = {C.x * 2, C.y * 2, -sq(C.x) - sq(C.y)};
     Point O;
     assert(areIntersect(l1, l2, O));
     O = O + A;
@@ -105,31 +105,33 @@ bool inPolygon(vector<Point>& p, Point q) {
 #define Det(a,b,c) ((double)(b.x-a.x)*(double)(c.y-a.y)-(double)(b.y-a.y)*(c.x-a.x))
 bool inConvex(vector<Point>& l, Point p){
     int a = 1, b = l.size()-1, c;
-    if (Det(l[0], l[a], l[b]) > 0) swap(a,b);
+    if (Det(l[0], l[a], l[b]) > eps) swap(a,b);
     // Allow on edge --> if (Det... > 0 || Det ... < 0)
-    if (Det(l[0], l[a], p) >= 0 || Det(l[0], l[b], p) <= 0) return false;
+    if (Det(l[0], l[a], p) > -eps || Det(l[0], l[b], p) < eps) return false;
     while(abs(a-b) > 1) {
         c = (a+b)/2;
-        if (Det(l[0], l[c], p) > 0) b = c; else a = c;
+        if (Det(l[0], l[c], p) > eps) b = c; else a = c;
     }
     // Alow on edge --> return Det... <= 0
-    return Det(l[a], l[b], p) < 0;
+    return Det(l[a], l[b], p) < -eps;
 }
 
 // counter clockwise
 double area2(Point a, Point b, Point c) { return cross(a, b) + cross(b, c) + cross(c, a); }
 vector<Point> convexHull(vector<Point> pts) {
+    int n = pts.size();
     sort(pts.begin(), pts.end());
     pts.erase(unique(pts.begin(), pts.end()), pts.end());
     vector<Point> up, dn;
     for (int i = 0; i < pts.size(); i++) {
-        // Note: If need maximum points on convex hull, need to change >= and <= to > and <.
-        while (up.size() > 1 && area2(up[up.size()-2], up.back(), pts[i]) >= 0) up.pop_back();
-        while (dn.size() > 1 && area2(dn[dn.size()-2], dn.back(), pts[i]) <= 0) dn.pop_back();
+        // Note: If need maximum points on convex hull, need to change >= 0 and <= 0 to > 0 and < 0.
+        while (up.size() > 1 && area2(up[up.size()-2], up.back(), pts[i]) > -eps) up.pop_back();
+        while (dn.size() > 1 && area2(dn[dn.size()-2], dn.back(), pts[i]) < eps) dn.pop_back();
         up.push_back(pts[i]);
         dn.push_back(pts[i]);
     }
     pts = dn;
     for (int i = (int) up.size() - 2; i >= 1; i--) pts.push_back(up[i]);
+    if (pts.size() > n) pts = {dn[0], dn.back()}; // pts = dn if need maximum points on convex hull
     return pts;
 }
