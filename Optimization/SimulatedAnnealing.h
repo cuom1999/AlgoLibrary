@@ -45,8 +45,8 @@ struct SimulatedAnnealing {
     }
 
     T solve(double maxTime) {
-        const double INIT_TEMP = 1000;
-        const double STOP_TEMP = 1e-3;
+        const double INIT_TEMP = 10000;
+        const double STOP_TEMP = 1e-5;
         const double MUL = 0.9998;
 
         initialize();
