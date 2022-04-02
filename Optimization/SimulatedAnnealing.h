@@ -73,6 +73,9 @@ struct SimulatedAnnealing {
                 else {
                     prev = now;
                 }
+                if((double)(clock()-initTime)*1.0/CLOCKS_PER_SEC > maxTime) {
+                   break;
+                }
             }
             if (prev < optimalCost || optimalCost == -1) {
                 optimalCost = prev;
