@@ -102,7 +102,7 @@ struct VirtualTree: LCA {
 
     // Return a vector of distinct nodes, sorted by first
     // The first node is root of virtual tree
-    // adj is the adj vector to store relationships. Important positions will be cleared
+    // adj[parent] = list of all children. Important positions will be cleared
     vector<int> getTree(vector<int> nodes, vector<vector<int>>& adj) {
         assert(adj.size() >= first.size());
         sort(nodes.begin(), nodes.end(), [&](int u, int v) {
