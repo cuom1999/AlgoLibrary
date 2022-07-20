@@ -1,0 +1,3 @@
+Let the query be path $u - v$ where $first[u] \leq first[v]$.
++ If $u$ is parent of $v$: [first[u], first[v]]
++ Else: [last[u], first[v]] + [first[LCA], first[LCA]]
