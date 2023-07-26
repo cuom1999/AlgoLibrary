@@ -47,27 +47,13 @@ struct SegmentTree {
     }
     
     int getFirst(int id, int l, int r, int u, int v, long long x) {
-        // first idx that a[idx] <= x in [u, v]
+        // first idx that a[idx] >= x in [u, v]
         if (r < u || v < l || u > v) return -1;
-        if (u <= l && r <= v) {
-            if (st[id].min > x) return -1;
-            while (l != r) {
-                down(id, l, r);
-                int mid = l + (r - l) / 2;
-                if (st[id * 2].min <= x) {
-                    id *= 2;
-                    r = mid;
-                }
-                else {
-                    id = id * 2 + 1;
-                    l = mid + 1;
-                }
-            }
-            return l;
-        }
+        if (st[id].max < x) return -1;
+        if (l == r) return l;
 
         down(id, l, r);
-        int mid = l + (r - l) / 2;
+        int mid = (l + r) / 2;
 
         int idx = getFirst(id * 2, l, mid, u, v, x);
         if (idx != -1) return idx;
