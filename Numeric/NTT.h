@@ -39,8 +39,8 @@ namespace NTT {
             for (int j = 0; j < n; j += i) {
                 for (int k = 0; k < i / 2; k++) {
                     int u = a[j + k], v = a[j + k + i / 2] * 1ll * roots[step * k] % MOD;
-                    a[j + k] = (u + v) % MOD;
-                    a[j + k + i / 2] = (u - v + MOD) % MOD;
+                    a[j + k] = (u + v) >= MOD ? u + v - MOD : u + v;
+                    a[j + k + i / 2] = (u >= v) ? u - v : u - v + MOD;
                 }
             }
         }
