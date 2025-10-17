@@ -1,87 +1,137 @@
-// Get Eulerian Cycle on undirected graph
-// To get path, choose starting and ending vertex first
-// Time Complexity: O(n + m)
 struct EulerianPath {
     struct Edge {
         int to, index;
+        bool isVirtual;
     };
 
     vector<vector<Edge>> adj;
     int n, m;
-    int startVertex;
+    vector<pair<int, int>> virtualEdges;
+    vector<int> visited, removed;
 
-    EulerianPath(int n): n(n){
+    EulerianPath(int n, int m): n(n), m(m) {
         adj.resize(n + 1);
-        startVertex = -1;
-        m = 0;
+        visited.resize(n + 1);
+        removed.resize(n + m + 1);
     }
 
-    void addEdge(int u, int v) {
-        adj[u].push_back({v, ++m});
-        adj[v].push_back({u, m});
+    void addEdge(int u, int v, int idx) {
+        adj[u].push_back({v, idx, false});
+        adj[v].push_back({u, idx, false});
     }
 
-    void dfs(int a, vector<int>& visited) {
-        visited[a] = 1;
-        for (auto i: adj[a]) {
-            if (!visited[i.to]) {
-                dfs(i.to, visited);
+    void findComponent(int u, vector<int>& component) {
+        visited[u] = true;
+        component.push_back(u);
+        
+        for (auto [v, i, isVir] : adj[u]) {
+            if (!visited[v]) {
+                findComponent(v, component);
             }
         }
     }
 
-    bool isEulerian() {
-        vector<int> visited(n + 1);
-        for (int i = 0; i <= n; i++) {
-            if (adj[i].size()) {
-                dfs(i, visited);
-                startVertex = i;
-                break;
-            }
-        }
-        for (int i = 0; i <= n; i++) {
-            if (adj[i].size() % 2) {
-                return false;
-            }
-            if (adj[i].size() && !visited[i]) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    vector<Edge> getEulerianPath() {
-        vector<int> removed(m + 1);
-        vector<Edge> res;
+    vector<Edge> findEulerCycle(int start) {
+        vector<Edge> cycle;
         stack<Edge> s;
-
-        if (startVertex == -1) {
-            return res;
-        }
-
-        s.push({startVertex, -1});
-
-        while (s.size()) {
+        
+        s.push({start, -1, 1});
+        
+        while (!s.empty()) {
             auto curVertex = s.top().to;
             
-            while (adj[curVertex].size()) {
+            // Remove already used edges
+            while (!adj[curVertex].empty()) {
                 auto u = adj[curVertex].back();
                 if (removed[u.index]) {
                     adj[curVertex].pop_back();
+                } else {
+                    break;
                 }
-                else break;
             }
-
-            if (adj[curVertex].size() == 0) {
-                res.push_back(s.top());
+            
+            if (adj[curVertex].empty()) {
+                cycle.push_back(s.top());
                 s.pop();
-            }
-            else {
+            } else {
                 auto u = adj[curVertex].back();
                 removed[u.index] = true;
-                s.push({u.to, u.index});
+                s.push(u);
             }
         }
-        return res;
+        
+        return cycle;
     }
+
+    vector<vector<int>> getEulerianPaths() {
+        vector<vector<int>> allPaths;     
+
+        // Handle each component
+        for (int start = 1; start <= n; start++) {
+            if (visited[start] || adj[start].size() == 0) continue;
+            
+            // Find all nodes in this component
+            vector<int> component;
+            findComponent(start, component);
+            
+            // Find odd degree nodes in this component
+            vector<int> oddNodes;
+            for (auto v : component) {
+                if (adj[v].size() % 2 == 1) {
+                    oddNodes.push_back(v);
+                }
+            }
+            
+            // Pair odd nodes and add virtual edges
+            for (int i = 0; i < oddNodes.size(); i += 2) {
+                if (i + 1 < oddNodes.size()) {
+                    int u = oddNodes[i];
+                    int v = oddNodes[i + 1];
+                    virtualEdges.push_back({u, v});
+                    adj[u].push_back({v, ++m, true});
+                    adj[v].push_back({u, m, true});
+                }
+            }
+
+            // Find Euler cycle for this component
+            auto cycle = findEulerCycle(start);
+
+            if (cycle.empty()) continue;
+
+            vector<vector<int>> paths;
+            vector<int> path;
+            for (int i = 0; i + 1 < cycle.size(); i++) {
+                int u = cycle[i].to;
+                int v = cycle[i + 1].to;
+                int idx = cycle[i].index;
+                bool isVirtual = cycle[i].isVirtual;
+
+                if (isVirtual) {
+                    paths.push_back(path);
+                    path.clear();
+                }
+                else {
+                    path.push_back(idx);
+                }
+            }
+
+            if (paths.empty()) { // is cycle
+                paths.push_back(path);
+            }
+            else { // has virtual edges
+                // Merge last path around first path
+                auto firstPath = paths[0];
+                for (auto e: firstPath) {
+                    path.push_back(e);
+                }
+                paths[0] = path;
+            }
+
+            for (auto path: paths) {
+                allPaths.push_back(path);
+            }
+        }
+
+        return allPaths;   
+    }                    
 };
